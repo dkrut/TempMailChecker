@@ -9,19 +9,27 @@ import java.io.IOException;
  */
 
 public class TextTransfer implements ClipboardOwner {
-    StringSelection stringSelection;
+    private String data = null;
+
     @Override
     public void lostOwnership(Clipboard clipboard, Transferable contents) {
     }
 
     public void setData(String data){
-        stringSelection = new StringSelection(data);
+        StringSelection stringSelection = new StringSelection(data);
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(stringSelection, this);
     }
 
-    public String getData() throws IOException, UnsupportedFlavorException {
+    public String getData() {
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        return (String) clipboard.getData(DataFlavor.stringFlavor);
+        try {
+            data = (String) clipboard.getData(DataFlavor.stringFlavor);
+        } catch (UnsupportedFlavorException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return data;
     }
 }

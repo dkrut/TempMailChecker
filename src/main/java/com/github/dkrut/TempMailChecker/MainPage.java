@@ -21,7 +21,7 @@ public class MainPage {
     SelenideElement buttonDeleteEmail = $("#click-to-delete");
     SelenideElement login = $(".input-box-warp [name=\"new_mail\"]");
     SelenideElement emailDomain = $(".selection [role=\"combobox\"]");
-    ElementsCollection emailDomainList = $$(".select2-results [role=\"tree\"]");
+    ElementsCollection emailDomainList = $$(".select2-results [role=\"tree\"] li"); //4
     SelenideElement buttonSave = $(".input-box-warp #postbut");
     SelenideElement emptyInbox = $(".emptyInboxTitle");
 
@@ -31,4 +31,38 @@ public class MainPage {
     String inboxSubject = ".col-box:nth-child(2) .inboxSubject a";
     String inboxAttachment = ".attachment [class=\"viewLink link\"]";
     String inboxOpen = ".m-link-view a";
+
+    private void clickChangeEmail() {
+        buttonChangeEmail.click();
+    }
+
+    private void clickEmailDomains() {
+        emailDomain.click();
+    }
+
+    private int domainsCount() {
+        clickChangeEmail();
+        clickEmailDomains();
+        return emailDomainList.size();
+    }
+
+    public String[] getDomains() {
+        int domainsCount = domainsCount();
+        String[] domains = new String[domainsCount];
+        for (int i = 0; i < domainsCount; i++) {
+            domains[i] = emailDomainList.get(i).getText();
+        }
+        return domains;
+    }
+
+    public void changeEmail(String emailLogin, String emailDomain) {
+        clickChangeEmail();
+        login.sendKeys(emailLogin);
+        for (int i = 1; i <= 4; i++) {
+            if (emailDomainList.get(i).getText().equals(emailDomain)) {
+                emailDomainList.get(i).click();
+                buttonSave.click();
+            } else System.out.println(emailDomain + " not found.");
+        }
+    }
 }
