@@ -5,21 +5,16 @@ package com.github.dkrut.TempMailChecker;
  */
 
 public class EmailParser {
-    private String email;
 
-    public EmailParser(String email) {
-        this.email = email;
-    }
-
-    private String[] getEmailParsed() {
+    private String[] getEmailParsed(String email) {
         return email.split("@");
     }
 
-    public String getEmailLogin(){
-        return getEmailParsed()[0];
+    public String getEmailLogin(String email) {
+        return getEmailParsed(email)[0];
     }
 
-    public String getEmailDomain(){
-        return "@" + getEmailParsed()[1];
+    public String getEmailDomain(String email) {
+        return "@" + getEmailParsed(email)[1];
     }
 }
