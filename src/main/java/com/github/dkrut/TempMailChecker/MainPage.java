@@ -3,8 +3,10 @@ package com.github.dkrut.TempMailChecker;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import static com.codeborne.selenide.Selenide.*;
@@ -197,5 +199,106 @@ public class MainPage {
     public int inboxCount() {
         if (emptyInbox()) return 0;
         else return inboxSize();
+    }
+
+    public SelenideElement getInboxInstance(int index) {
+        return inboxList.get(index);
+    }
+
+    public String getInboxSenderName(int index) {
+        return getInboxInstance(index).find(By.cssSelector(inboxSenderName)).getText();
+    }
+
+    public String getInboxSenderEmail(int index) {
+        return getInboxInstance(index).find(By.cssSelector(inboxSenderEmail)).getText();
+    }
+
+    public String getInboxSubject(int index) {
+        return getInboxInstance(index).find(By.cssSelector(inboxSubject)).getText();
+    }
+
+    public boolean getInboxAttachment(int index) {
+        return getInboxInstance(index).find(By.cssSelector(inboxAttachment)).exists();
+    }
+
+    public void clickOpenInbox(int index) {
+        getInboxInstance(index).find(By.cssSelector(inboxOpen)).click();
+    }
+
+    public int getInboxIndexBySenderName(String senderName) {
+        int index = 0;
+        for (int i = 0; i <= inboxCount(); i++) {
+            if (getInboxSenderName(i).equals(senderName)) {
+                index = i;
+                break;
+            } else index = 0;
+        } return index;
+    }
+
+    public int getInboxIndexBySenderEmail(String senderEmail) {
+        int index = 0;
+        for (int i = 0; i <= inboxCount(); i++) {
+            if (getInboxSenderEmail(i).equals(senderEmail)) {
+                index = i;
+                break;
+            } else index = 0;
+        } return index;
+    }
+
+    public int getInboxIndexBySubject(String subject) {
+        int index = 0;
+        for (int i = 0; i <= inboxCount(); i++) {
+            if (getInboxSubject(i).equals(subject)) {
+                index = i;
+                break;
+            } else index = 0;
+        } return index;
+    }
+
+    public int getInboxIndexByAttachment() {
+        int index = 0;
+        for (int i = 0; i <= inboxCount(); i++) {
+            if (getInboxAttachment(i)) {
+                index = i;
+                break;
+            } else index = 0;
+        } return index;
+    }
+
+
+    public ArrayList<Integer> getInboxIndexBySenderNameA(String senderName) {
+        ArrayList<Integer> index = new ArrayList<>();
+        for (int i = 0; i <= inboxCount(); i++) {
+            if (getInboxSenderName(i).equals(senderName)) {
+                index.add(i);
+            }
+        } return index;
+    }
+
+    public ArrayList<Integer> getInboxIndexBySenderEmailA(String senderEmail) {
+        ArrayList<Integer> index = new ArrayList<>();
+        for (int i = 0; i <= inboxCount(); i++) {
+            if (getInboxSenderName(i).equals(senderEmail)) {
+                index.add(i);
+            }
+        } return index;
+    }
+
+    public ArrayList<Integer> getInboxIndexBySubjectA(String subject) {
+        ArrayList<Integer> index = new ArrayList<>();
+        for (int i = 0; i <= inboxCount(); i++) {
+            if (getInboxSenderName(i).equals(subject)) {
+                index.add(i);
+            }
+        } return index;
+    }
+
+    public ArrayList<Integer> getInboxIndexByAttachmentA() {
+        ArrayList<Integer> index = new ArrayList<>();
+        for (int i = 0; i <= inboxCount(); i++) {
+            if (getInboxAttachment(i)) {
+                index.add(i);
+            }
+        } return index;
     }
 }
