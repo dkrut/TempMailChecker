@@ -1,6 +1,7 @@
 package com.github.dkrut.TempMailChecker;
 
 import static com.codeborne.selenide.Configuration.baseUrl;
+import static com.codeborne.selenide.Configuration.*;
 import static com.codeborne.selenide.Selenide.open;
 
 /**
@@ -15,11 +16,14 @@ public class TempMailChecker {
 
     public TempMailChecker() {
         baseUrl = "https://temp-mail.org";
+        screenshots = false;
+        savePageSource = false;
+        reportsFolder = null;
     }
 
     public String getTempEmail() {
         open("/");
-        mainPage.buttonCopyTempEmailAddressee.click();
+        mainPage.copyCurrentEmailFromInputWarp();
         return textTransfer.getData();
     }
 

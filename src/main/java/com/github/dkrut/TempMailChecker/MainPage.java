@@ -1,10 +1,13 @@
 package com.github.dkrut.TempMailChecker;
 
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
+import org.openqa.selenium.Keys;
 
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
+import java.util.Random;
+
+import static com.codeborne.selenide.Selenide.*;
 
 /**
  * Created by Denis Krutikov on 10.05.2020.
@@ -20,10 +23,11 @@ public class MainPage {
     SelenideElement buttonChangeEmail = $("#click-to-change");
     SelenideElement buttonDeleteEmail = $("#click-to-delete");
     SelenideElement login = $(".input-box-warp [name=\"new_mail\"]");
-    SelenideElement emailDomain = $(".selection [role=\"combobox\"]");
+    SelenideElement emailDomain = $(".select2-selection__arrow");
     ElementsCollection emailDomainList = $$(".select2-results [role=\"tree\"] li"); //4
     SelenideElement buttonSave = $(".input-box-warp #postbut");
-    SelenideElement emptyInbox = $(".emptyInboxTitle");
+    SelenideElement emptyInbox = $("[class=\"inbox-empty\"] .emptyInboxTitle");
+    SelenideElement emailChangedMessage = $(".growl-message");
 
     ElementsCollection inboxList = $$(".inbox-dataList ul li"); // -1
     String inboxSenderName = ".inboxSenderName";
@@ -32,17 +36,79 @@ public class MainPage {
     String inboxAttachment = ".attachment [class=\"viewLink link\"]";
     String inboxOpen = ".m-link-view a";
 
-    private void clickChangeEmail() {
+    public void copyCurrentEmailFromInputWarp() {
+        currentEmail.click();
+        currentEmail.sendKeys(Keys.CONTROL, "c");
+    }
+
+    public void clickButtonQrCode() {
+        buttonQrCode.click();
+    }
+
+    public void clickButtonCopyTempEmailAddresseeMain() {
+        buttonCopyTempEmailAddresseeMain.click();
+    }
+
+    public void clickButtonCopyTempEmailAddressee() {
+        buttonCopyTempEmailAddressee.click();
+    }
+
+    public void clickButtonRefresh() {
+        buttonRefresh.click();
+    }
+
+    public void clickButtonDeleteEmail() {
+        buttonDeleteEmail.click();
+    }
+
+    private void clickButtonChangeEmail() {
         buttonChangeEmail.click();
     }
 
-    private void clickEmailDomains() {
+    private void clickEmailDomainsArray() {
         emailDomain.click();
     }
 
+    public void clickButtonSaveEmail() {
+        buttonSave.click();
+    }
+
+    public boolean emptyInbox() {
+        if (emptyInbox.exists()) sleep(3000);
+        return emptyInbox.exists();
+    }
+
+    public void setEmailLogin(String emailLogin) {
+        login.sendKeys(emailLogin);
+    }
+
+    private String randomString(int stringLength) {
+        String symbols = "abcdefghijklmnopqrstuvwxyz" + "0123456789";
+
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < stringLength; i++) {
+            sb.append(symbols.charAt(random.nextInt(symbols.length()-1)));
+        }
+         return sb.toString();
+    }
+
+    private String randomString() {
+        return randomString(10);
+    }
+
+    public void setEmailLoginRandom() {
+        login.sendKeys(randomString());
+    }
+
+    public void setEmailLoginRandom(int emailLoginLength) {
+        login.sendKeys(randomString(emailLoginLength));
+    }
+
     private int domainsCount() {
-        clickChangeEmail();
-        clickEmailDomains();
+        clickButtonChangeEmail();
+        clickEmailDomainsArray();
+        System.out.println("Domains count: " + emailDomainList.size());
         return emailDomainList.size();
     }
 
@@ -55,14 +121,81 @@ public class MainPage {
         return domains;
     }
 
-    public void changeEmail(String emailLogin, String emailDomain) {
-        clickChangeEmail();
-        login.sendKeys(emailLogin);
-        for (int i = 1; i <= 4; i++) {
-            if (emailDomainList.get(i).getText().equals(emailDomain)) {
-                emailDomainList.get(i).click();
-                buttonSave.click();
-            } else System.out.println(emailDomain + " not found.");
+    public String getEmailDomainName(int index) {
+        return emailDomainList.get(index).getText();
+    }
+
+    public void chooseEmailDomain(int index) {
+        emailDomainList.get(index).click();
+        System.out.println();
+    }
+
+    public void setEmailDomain(String emailDomain) {
+        String[] domains = getDomains();
+        for (int i = 0; i < domains.length; i++) {
+            if (domains[i].equals(emailDomain)) {
+                System.out.println("Check #" + (i+1) + ". Email domain found: " + domains[i]);
+                chooseEmailDomain(i);
+                break;
+            } else System.out.println("Check #" + (i+1) + ". Email domain not found: " + emailDomain);
         }
+    }
+
+    public void setEmailDomainRandom() {
+        String[] domains = getDomains();
+        chooseEmailDomain((int)(Math.random() * domains.length));
+    }
+
+    public void changeEmail(String emailLogin, String emailDomain) {
+        clickButtonChangeEmail();
+        setEmailDomain(emailDomain);
+        setEmailLogin(emailLogin);
+        clickButtonSaveEmail();
+        checkMessageEmailChanged();
+    }
+
+    public void checkMessageEmailChanged() {
+        emailChangedMessage.shouldBe(Condition.visible);
+    }
+
+    public void changeEmailRandomDomain(String emailLogin) {
+        clickButtonChangeEmail();
+        setEmailDomainRandom();
+        setEmailLogin(emailLogin);
+        clickButtonSaveEmail();
+        checkMessageEmailChanged();
+    }
+
+    public void changeEmailRandomLogin(String emailDomain) {
+        clickButtonChangeEmail();
+        setEmailDomain(emailDomain);
+        setEmailLoginRandom();
+        clickButtonSaveEmail();
+        checkMessageEmailChanged();
+    }
+
+    public void changeEmailRandomLogin(String emailDomain, int emailLoginLength) {
+        clickButtonChangeEmail();
+        setEmailDomain(emailDomain);
+        setEmailLoginRandom(emailLoginLength);
+        clickButtonSaveEmail();
+        checkMessageEmailChanged();
+    }
+
+    public void changeEmailRandomLoginDomain() {
+        clickButtonChangeEmail();
+        setEmailDomainRandom();
+        setEmailLoginRandom();
+        clickButtonSaveEmail();
+        checkMessageEmailChanged();
+    }
+
+    public int inboxSize() {
+        return (inboxList.size()-1);
+    }
+
+    public int inboxCount() {
+        if (emptyInbox()) return 0;
+        else return inboxSize();
     }
 }
