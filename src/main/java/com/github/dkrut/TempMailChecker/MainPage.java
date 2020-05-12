@@ -73,9 +73,10 @@ public class MainPage {
 
     public void clickButtonSaveEmail() {
         buttonSave.click();
+        checkMessageEmailChanged();
     }
 
-    public boolean emptyInbox() {
+    private boolean emptyInbox() {
         if (emptyInbox.exists()) sleep(3000);
         return emptyInbox.exists();
     }
@@ -153,10 +154,9 @@ public class MainPage {
         setEmailDomain(emailDomain);
         setEmailLogin(emailLogin);
         clickButtonSaveEmail();
-        checkMessageEmailChanged();
     }
 
-    public void checkMessageEmailChanged() {
+    private void checkMessageEmailChanged() {
         emailChangedMessage.shouldBe(Condition.visible);
     }
 
@@ -165,7 +165,6 @@ public class MainPage {
         setEmailDomainRandom();
         setEmailLogin(emailLogin);
         clickButtonSaveEmail();
-        checkMessageEmailChanged();
     }
 
     public void changeEmailRandomLogin(String emailDomain) {
@@ -173,7 +172,6 @@ public class MainPage {
         setEmailDomain(emailDomain);
         setEmailLoginRandom();
         clickButtonSaveEmail();
-        checkMessageEmailChanged();
     }
 
     public void changeEmailRandomLogin(String emailDomain, int emailLoginLength) {
@@ -181,7 +179,6 @@ public class MainPage {
         setEmailDomain(emailDomain);
         setEmailLoginRandom(emailLoginLength);
         clickButtonSaveEmail();
-        checkMessageEmailChanged();
     }
 
     public void changeEmailRandomLoginDomain() {
@@ -189,16 +186,19 @@ public class MainPage {
         setEmailDomainRandom();
         setEmailLoginRandom();
         clickButtonSaveEmail();
-        checkMessageEmailChanged();
     }
 
-    public int inboxSize() {
+    private int inboxSize() {
         return (inboxList.size()-1);
     }
 
     public int inboxCount() {
         if (emptyInbox()) return 0;
         else return inboxSize();
+    }
+
+    public SelenideElement getInboxLatest() {
+         return getInboxInstance(1);
     }
 
     public SelenideElement getInboxInstance(int index) {
@@ -223,6 +223,36 @@ public class MainPage {
 
     public void clickOpenInbox(int index) {
         getInboxInstance(index).find(By.cssSelector(inboxOpen)).click();
+    }
+
+    public String getInboxSenderNameLatest() {
+        if (inboxCount() == 0) {
+            return null;
+        } else return getInboxLatest().find(By.cssSelector(inboxSenderName)).getText();
+    }
+
+    public String getInboxSenderEmailLatest() {
+        if (inboxCount() == 0) {
+            return null;
+        } else return getInboxLatest().find(By.cssSelector(inboxSenderEmail)).getText();
+    }
+
+    public String getInboxSubjectLatest() {
+        if (inboxCount() == 0) {
+            return null;
+        } else return getInboxLatest().find(By.cssSelector(inboxSubject)).getText();
+    }
+
+    public Boolean getInboxAttachmentLatest() {
+        if (inboxCount() == 0) {
+            return null;
+        } else return getInboxLatest().find(By.cssSelector(inboxAttachment)).exists();
+    }
+
+    public void clickOpenInboxLatest() {
+        if (inboxCount() == 0) {
+            System.out.println("Your inbox is empty");
+        } getInboxLatest().find(By.cssSelector(inboxOpen)).click();
     }
 
     public int getInboxIndexBySenderName(String senderName) {
@@ -278,7 +308,7 @@ public class MainPage {
     public ArrayList<Integer> getInboxIndexBySenderEmailA(String senderEmail) {
         ArrayList<Integer> index = new ArrayList<>();
         for (int i = 0; i <= inboxCount(); i++) {
-            if (getInboxSenderName(i).equals(senderEmail)) {
+            if (getInboxSenderEmail(i).equals(senderEmail)) {
                 index.add(i);
             }
         } return index;
@@ -287,7 +317,7 @@ public class MainPage {
     public ArrayList<Integer> getInboxIndexBySubjectA(String subject) {
         ArrayList<Integer> index = new ArrayList<>();
         for (int i = 0; i <= inboxCount(); i++) {
-            if (getInboxSenderName(i).equals(subject)) {
+            if (getInboxSubject(i).equals(subject)) {
                 index.add(i);
             }
         } return index;

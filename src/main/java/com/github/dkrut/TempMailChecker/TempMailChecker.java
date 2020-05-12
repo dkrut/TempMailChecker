@@ -1,6 +1,6 @@
 package com.github.dkrut.TempMailChecker;
 
-import static com.codeborne.selenide.Configuration.baseUrl;
+
 import static com.codeborne.selenide.Configuration.*;
 import static com.codeborne.selenide.Selenide.open;
 
@@ -19,14 +19,33 @@ public class TempMailChecker {
         screenshots = false;
         savePageSource = false;
         reportsFolder = null;
+        reopenBrowserOnFail = true;
     }
 
+    /**
+     * Get current temp email
+     */
     public String getTempEmail() {
         open("/");
         mainPage.copyCurrentEmailFromInputWarp();
         return textTransfer.getData();
     }
 
+    public String getTempEmailByButtonMain() {
+        open("/");
+        mainPage.clickButtonCopyTempEmailAddresseeMain();
+        return textTransfer.getData();
+    }
+
+    public String getTempEmailByButton() {
+        open("/");
+        mainPage.clickButtonCopyTempEmailAddressee();
+        return textTransfer.getData();
+    }
+
+    /**
+     * Email parsing
+     */
     public String getEmailLogin(String email) {
         return emailParser.getEmailLogin(email);
     }
@@ -35,8 +54,36 @@ public class TempMailChecker {
         return emailParser.getEmailDomain(email);
     }
 
-    public void setTempEmail(String emailLogin, String emailDomain) {
+    /**
+     * Set new Email
+     */
+    public void setTempEmail(String email) {
         open("/");
-        mainPage.changeEmail(emailLogin, emailDomain);
+        if (email.contains("@") && email.endsWith(".com")) {
+            mainPage.changeEmail(getEmailLogin(email), getEmailDomain(email));
+        } else System.out.println("Email not valid");
+    }
+
+    /**
+     * Inbox latest
+     */
+    public String getInboxSenderNameLatest() {
+        return mainPage.getInboxSenderNameLatest();
+    }
+
+    public String getInboxSenderEmailLatest() {
+        return mainPage.getInboxSenderEmailLatest();
+    }
+
+    public String getInboxSubjectLatest() {
+        return mainPage.getInboxSubjectLatest();
+    }
+
+    public Boolean getInboxAttachmentLatest() {
+        return mainPage.getInboxAttachmentLatest();
+    }
+
+    public void clickOpenInboxLatest() {
+        mainPage.clickOpenInboxLatest();
     }
 }
