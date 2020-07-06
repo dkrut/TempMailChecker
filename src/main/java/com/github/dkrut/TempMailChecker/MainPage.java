@@ -18,6 +18,7 @@ import static com.codeborne.selenide.Selenide.*;
 public class MainPage {
 
     SelenideElement currentEmail = $(".input-warp #mail");
+    SelenideElement currentEmailLoaded = $(".input-warp input[class=\"emailbox-input opentip\"]");
     SelenideElement buttonQrCode = $("button[class=\"btn-rds icon-btn btn-l-gary popover-qr\"]");
     SelenideElement buttonCopyTempEmailAddresseeMain = $(".input-box-col.hidden-xs-sm button[data-clipboard-action=copy]");
     SelenideElement buttonCopyTempEmailAddressee = $("#click-to-copy");

@@ -1,6 +1,8 @@
 package com.github.dkrut.TempMailChecker;
 
 
+import com.codeborne.selenide.Condition;
+
 import static com.codeborne.selenide.Configuration.*;
 import static com.codeborne.selenide.Selenide.open;
 
@@ -22,23 +24,33 @@ public class TempMailChecker {
         reopenBrowserOnFail = true;
     }
 
+    private void openMain() {
+        open("/");
+        try {
+            mainPage.currentEmailLoaded.shouldBe(Condition.exist);
+        } catch (AssertionError e) {
+            System.out.println("Server error. Temp email didn't load.");
+            System.exit(1);
+        }
+    }
+
     /**
      * Get current temp email
      */
     public String getTempEmail() {
-        open("/");
+        openMain();
         mainPage.copyCurrentEmailFromInputWarp();
         return textTransfer.getData();
     }
 
     public String getTempEmailByButtonMain() {
-        open("/");
+        openMain();
         mainPage.clickButtonCopyTempEmailAddresseeMain();
         return textTransfer.getData();
     }
 
     public String getTempEmailByButton() {
-        open("/");
+        openMain();
         mainPage.clickButtonCopyTempEmailAddressee();
         return textTransfer.getData();
     }
@@ -58,7 +70,7 @@ public class TempMailChecker {
      * Set new Email
      */
     public void setTempEmail(String email) {
-        open("/");
+        openMain();
         if (email.contains("@") && email.endsWith(".com")) {
             mainPage.changeEmail(getEmailLogin(email), getEmailDomain(email));
         } else System.out.println("Email not valid");
